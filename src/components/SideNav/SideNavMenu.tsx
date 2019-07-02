@@ -27,11 +27,13 @@ export class SideNavMenu extends React.Component<SideNavMenuProps, {textFilter: 
             </div>
             <NavFilterContext.Provider value={this.state.textFilter}>
                 <NavGroup text='NavGroup1'>
-                    <TextAndIconWithLink text='A' url=''/>
-                    <NavGroup text='NavGroup2'>
+                    <NavGroup text='NavGroup2' priority={2}>
                         <TextAndIconWithLink text='B' url=''/>
                         <TextAndIconWithLink text='C' url=''/>
                     </NavGroup>
+                    <TextAndIconWithLink text='AAA' url='' priority={2}/>
+                    <TextAndIconWithLink text='BBB' url='' priority={1}/>
+                    <TextAndIconWithLink text='CCC' url='' priority={3}/>
                 </NavGroup>
             </NavFilterContext.Provider>
         </div>
