@@ -2,28 +2,12 @@ import TextAndIconWithLink from "./TextAndIconWithLink";
 import NavGroup from "./NavGroup";
 import React from 'react';
 
-export const isNavGroup = (reactNode: any) : boolean => {
+const isNavGroup = (reactNode: any) : boolean => {
     return reactNode.type === NavGroup;
 }
 
 const isLinkToShow = (textAndIconWithLink: TextAndIconWithLink, navFilter: string) : boolean => {
     return textAndIconWithLink.props.text.includes(navFilter);
-}
-
-const isNavGroupToShow = (navGroup: NavGroup, navFilter: string): boolean => {
-    if( navGroup.props.text.includes(navFilter) ) {
-        return true;
-    }
-    const childrens: any[] = React.Children.toArray(navGroup.props.children);
-    for (const child of childrens) {
-        if (isNavGroup(child) ) {
-            return isNavGroupToShow(child, navFilter);
-        }
-        if( isLinkToShow(child, navFilter) ){
-            return true;
-        }
-    }
-    return false;
 }
 
 const comparePriority = (item1: any, item2: any) => {
@@ -48,6 +32,22 @@ const getRenderedItemsFromGroup = (navFilter: string, items: any) => {
             return isLinkToShow(child, navFilter) && <li key={index}>{child}</li>;
         }
     })
+}
+
+export const isNavGroupToShow = (navGroup: NavGroup, navFilter: string): boolean => {
+    if( navGroup.props.text.includes(navFilter) ) {
+        return true;
+    }
+    const childrens: any[] = React.Children.toArray(navGroup.props.children);
+    for (const child of childrens) {
+        if (isNavGroup(child) ) {
+            return isNavGroupToShow(child, navFilter);
+        }
+        if( isLinkToShow(child, navFilter) ){
+            return true;
+        }
+    }
+    return false;
 }
 
 export const getAllRenderedItems = (items: any, sortAlphabetically: boolean, navFilter: string) => {
