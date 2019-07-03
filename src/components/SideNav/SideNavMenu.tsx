@@ -26,8 +26,8 @@ export class SideNavMenu extends React.Component<SideNavMenuProps, {textFilter: 
                 <input className='nav-search' value={this.state.textFilter} onChange={this.inputChange} placeholder='search'/>
             </div>
             <NavFilterContext.Provider value={this.state.textFilter}>
-                <NavGroup text='NavGroup1'>
-                    <NavGroup text='NavGroup2' priority={2}>
+                <NavGroup sortAlphabetically={true} text='NavGroup1'>
+                    <NavGroup sortAlphabetically={true} text='NavGroup2' priority={2}>
                         <TextAndIconWithLink text='B' url=''/>
                         <TextAndIconWithLink text='C' url=''/>
                     </NavGroup>
