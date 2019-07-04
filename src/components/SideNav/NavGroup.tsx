@@ -1,11 +1,11 @@
 import React from 'react';
-import { NavFilterContext } from './SideNavMenu';
-import { getAllRenderedItems, isNavGroupToShow } from './NavHelper';
+import { FilterContext } from './SideNavMenu';
+import { getAllListItems, navGroupIncludesFilter } from './NavHelper';
 
 interface NavGroupProps {
     text: string;
     icon?: any;
-    navFilter?: string;
+    filter?: string;
     priority?: number;
     sortAlphabetically: boolean;
 }
@@ -13,15 +13,15 @@ interface NavGroupProps {
 export default class NavGroup extends React.Component<NavGroupProps> {
     render() {
         const children = this.props.children;
-        return <NavFilterContext.Consumer>
-            { navFilter => isNavGroupToShow(this, navFilter) && <>
-                <li>
+        return <FilterContext.Consumer>
+            { filter => navGroupIncludesFilter(this, filter) && <>
+                <div>
                     {this.props.text}{this.props.icon}
-                </li>
+                </div>
                 <ul>
-                    {getAllRenderedItems(children, this.props.sortAlphabetically, navFilter)}
+                    {getAllListItems(children, this.props.sortAlphabetically, filter)}
                 </ul> 
             </>}
-        </NavFilterContext.Consumer>
+        </FilterContext.Consumer>
     }
 }

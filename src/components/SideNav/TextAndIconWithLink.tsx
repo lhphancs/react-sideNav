@@ -12,8 +12,6 @@ interface ITextAndIconWithLink {
 export default class TextAndIconWithLink extends React.Component<ITextAndIconWithLink> {
     render() {
         const props = this.props;
-        return <>
-            <NavLink activeClassName='active' exact={props.exact} to={props.url} key={props.url}>{props.icon}{props.text}</NavLink>
-        </>
+        return <NavLink activeClassName='active' exact={props.exact} to={props.url} key={props.url}>{props.icon}{props.text}</NavLink>
     }
 }

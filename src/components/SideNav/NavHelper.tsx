@@ -6,8 +6,8 @@ const isNavGroup = (reactNode: any) : boolean => {
     return reactNode.type === NavGroup;
 }
 
-const isLinkToShow = (textAndIconWithLink: TextAndIconWithLink, navFilter: string) : boolean => {
-    return textAndIconWithLink.props.text.includes(navFilter);
+const isLinkAndIncludesFilter = (textAndIconWithLink: TextAndIconWithLink, filter: string) : boolean => {
+    return textAndIconWithLink.props.text.includes(filter);
 }
 
 const comparePriority = (item1: any, item2: any) => {
@@ -22,40 +22,44 @@ const comparePriority = (item1: any, item2: any) => {
     }
 }
 
-const getRenderedItemsFromGroup = (navFilter: string, items: any) => {
-    return items.map( (child: any, index: number) => {
-        if ( isNavGroup(child) ) {
-            const isNavGroupAndToShow = isNavGroupToShow(child, navFilter);
-            return isNavGroupAndToShow && <li key={index}>{child}</li>
-        }
-        else {
-            return isLinkToShow(child, navFilter) && <li key={index}>{child}</li>;
-        }
-    })
-}
-
-export const isNavGroupToShow = (navGroup: NavGroup, navFilter: string): boolean => {
-    if( navGroup.props.text.includes(navFilter) ) {
+export const navGroupIncludesFilter = (navGroup: NavGroup, filter: string): boolean => {
+    if( navGroup.props.text.includes(filter) ) {
         return true;
     }
     const childrens: any[] = React.Children.toArray(navGroup.props.children);
     for (const child of childrens) {
-        if (isNavGroup(child) ) {
-            return isNavGroupToShow(child, navFilter);
+        if ( isNavGroup(child) && navGroupIncludesFilter(child, filter) ) {
+            return true;
         }
-        if( isLinkToShow(child, navFilter) ){
+        if( isLinkAndIncludesFilter(child, filter) ){
             return true;
         }
     }
     return false;
 }
 
-export const getAllRenderedItems = (items: any, sortAlphabetically: boolean, navFilter: string) => {
+const getListItemsWithFilterFromChildren = (children: any, filter: string) => {
+    const listItems: any[] = [];
+    children.forEach( (child: any, index: number) => {
+        if ( isNavGroup(child) ) {
+            if ( navGroupIncludesFilter(child, filter) ) {
+                listItems.push(<li key={index}>{child}</li>);
+            }
+        }
+        else if ( isLinkAndIncludesFilter(child, filter) ) {
+             listItems.push( <li key={index}>{child}</li> );
+        }
+    });
+    return listItems;
+}
+
+
+export const getAllListItems = (children: any, sortAlphabetically: boolean, filter: string) => {
         const priorityItems: any = [];
         const nonPriorityItems: any = [];
 
-        const childrens = React.Children.toArray(items);
-        childrens.forEach( (child: any) => {
+        const arr = React.Children.toArray(children);
+        arr.forEach( (child: any) => {
             if (child.props.priority) {
                 priorityItems.push(child);
             }
@@ -76,8 +80,6 @@ export const getAllRenderedItems = (items: any, sortAlphabetically: boolean, nav
             });
         }
 
-        return <>
-            {getRenderedItemsFromGroup(navFilter, priorityItems)}
-            {getRenderedItemsFromGroup(navFilter, nonPriorityItems)}
-        </>
+        const allRenderedItems = [...getListItemsWithFilterFromChildren(priorityItems, filter), ...getListItemsWithFilterFromChildren(nonPriorityItems, filter)];
+        return allRenderedItems;
     }
