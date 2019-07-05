@@ -1,13 +1,13 @@
-import React from 'react';
-import NavGroup from './NavGroup';
-import TextAndIconWithLink from './TextAndIconWithLink';
+import React, { ReactElement } from 'react';
 import { getAllListItems } from './NavHelper';
 
 interface SideNavMenuProps {
+    navs: ReactElement;
     sortAlphabetically: boolean;
 }
 
-export const FilterContext = React.createContext('');
+export const NavFilterContext = React.createContext('');
+export const NavSortAlphabeticallyContext = React.createContext(false);
 
 export class SideNavMenu extends React.Component<SideNavMenuProps, {textFilter: string}>{
     constructor(props: SideNavMenuProps){
@@ -21,35 +21,29 @@ export class SideNavMenu extends React.Component<SideNavMenuProps, {textFilter: 
         this.setState({textFilter: e.target.value});
     }
 
-    private getNavs = () => {
-        return <>
-            <TextAndIconWithLink text='BBB' url='' priority={1}/>
-            <NavGroup sortAlphabetically={true} text='NavGroup1'>
-                <NavGroup sortAlphabetically={true} text='NavGroup2' priority={2}>
-                    <TextAndIconWithLink text='B' url=''/>
-                    <TextAndIconWithLink text='C' url=''/>
-                </NavGroup>
-                <TextAndIconWithLink text='AAA' url='' priority={2}/>
-                <TextAndIconWithLink text='CCC' url='' priority={3}/>
-            </NavGroup>
-        </>
+    private getResultingDisplay = (allListItems: Element[]) => {
+        if (allListItems.length === 0){
+            return <div>No result</div>
+        }
+
+        return <NavSortAlphabeticallyContext.Provider value={this.props.sortAlphabetically}>
+            <NavFilterContext.Provider value={this.state.textFilter}>
+                <ul>
+                    {allListItems}
+                </ul>
+            </NavFilterContext.Provider>
+        </NavSortAlphabeticallyContext.Provider>
     }
 
     render() {
-        const children = this.getNavs().props.children;
-        const allRenderedItems = getAllListItems(children, this.props.sortAlphabetically, this.state.textFilter);
-
-        const resultingDisplay = allRenderedItems.length === 0 ? <div>No result</div> : <FilterContext.Provider value={this.state.textFilter}>
-                <ul>
-                    {allRenderedItems}
-                </ul>
-            </FilterContext.Provider>
+        const children = this.props.navs.props.children;
+        const allListItems = getAllListItems(children, this.props.sortAlphabetically, this.state.textFilter);
 
         return <div>
             <div>
                 <input className='nav-search' value={this.state.textFilter} onChange={this.inputChange} placeholder='search'/>
             </div>
-            {resultingDisplay}
+            { this.getResultingDisplay(allListItems) }
         </div>
     }
 }

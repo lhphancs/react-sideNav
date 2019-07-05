@@ -43,7 +43,7 @@ const getListItemsWithFilterFromChildren = (children: any, filter: string) => {
     children.forEach( (child: any, index: number) => {
         if ( isNavGroup(child) ) {
             if ( navGroupIncludesFilter(child, filter) ) {
-                listItems.push(<li key={index}>{child}</li>);
+                listItems.push(<li key={ `${child.props.text}${index}` }>{child}</li>);
             }
         }
         else if ( isLinkAndIncludesFilter(child, filter) ) {
@@ -52,7 +52,6 @@ const getListItemsWithFilterFromChildren = (children: any, filter: string) => {
     });
     return listItems;
 }
-
 
 export const getAllListItems = (children: any, sortAlphabetically: boolean, filter: string) => {
         const priorityItems: any = [];
